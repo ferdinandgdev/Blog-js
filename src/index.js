@@ -1,3 +1,4 @@
+import { async } from "regenerator-runtime";
 import "./assets/styles/styles.scss";
 import "./index.scss";
 
@@ -25,11 +26,28 @@ const createArticles = (articles) => {
   });
   articleContainerElement.innerHTML = "";
   articleContainerElement.append(...articlesDOM);
+  const deleteButton = articleContainerElement.querySelectorAll(".btn-danger");
+  deleteButton.forEach((button) => {
+    button.addEventListener("click", async (event) => {
+      try {
+        const target = event.target;
+        const articleId = target.dataset.id;
+        const response = fetch(`https://restapi.fr/api/articles/${articleId}`, {
+          method: "DELETE",
+        });
+        const body = (await response).json;
+        console.log(body);
+        fetchArticle();
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  });
 };
 
 const fetchArticle = async () => {
   try {
-    const response = await fetch("https://restapi.fr/api/article");
+    const response = await fetch("https://restapi.fr/api/articles");
     let articles = await response.json();
     // Restapi retourne un objet s'il n'y a qu'un seul article
     // nous devons donc le transformer en tableau :
