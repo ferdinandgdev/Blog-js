@@ -1,8 +1,13 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 module.exports = {
-  entry: path.resolve(__dirname, "src/index.js"),
+  entry: {
+    main: path.resolve(__dirname, "src/index.js"),
+    form: path.resolve(__dirname, "src/form/form.js"),
+    topbar: path.resolve(__dirname, "src/assets/javascripts/topbar.js"),
+  },
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].bundle.js",
@@ -30,8 +35,24 @@ module.exports = {
     ],
   },
   plugins: [
+    new CleanWebpackPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: "./src/assets/images/*",
+          to: "assets/images/[name][ext]",
+        },
+      ],
+    }),
     new HtmlWebpackPlugin({
+      filename: "index.html",
       template: path.resolve(__dirname, "src/index.html"),
+      chunks: ["main", "topbar"],
+    }),
+    new HtmlWebpackPlugin({
+      filename: "form.html",
+      template: path.resolve(__dirname, "src/form/form.html"),
+      chunks: ["form", "topbar"],
     }),
   ],
   devtool: "source-map",
