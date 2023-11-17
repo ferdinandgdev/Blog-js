@@ -1,9 +1,9 @@
-import { async } from "regenerator-runtime";
 import "./assets/styles/styles.scss";
 import "./index.scss";
 
 const articleContainerElement = document.querySelector(".articles-container");
-
+const date = (document.getElementById("Aujourdhui").valueAsDate =
+  new Date()).toString();
 const createArticles = (articles) => {
   const articlesDOM = articles.map((article) => {
     const articleDOM = document.createElement("div");
