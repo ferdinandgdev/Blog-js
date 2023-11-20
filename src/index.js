@@ -14,20 +14,37 @@ const createArticles = (articles) => {
   alt="profile"
 />
 <h2>${article.title}</h2>
-<p class="article-author">${article.author} - ${article.category}</p>
+<p class="article-author">${article.author} - ${new Date(
+      article.createdAt
+    ).toLocaleDateString("fr-FR", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    })}</p>
 <p class="article-content">
   ${article.content}
 </p>
 <div class="article-actions">
   <button class="btn btn-danger" data-id=${article._id} >Supprimer</button>
+<button class="btn btn-primary" data-id=${article._id} >Editer</button>
+
 </div>
 `;
     return articleDOM;
   });
   articleContainerElement.innerHTML = "";
   articleContainerElement.append(...articlesDOM);
-  const deleteButton = articleContainerElement.querySelectorAll(".btn-danger");
-  deleteButton.forEach((button) => {
+  const deleteButtons = articleContainerElement.querySelectorAll(".btn-danger");
+  const editButtons = articleContainerElement.querySelectorAll(".btn-primary");
+  editButtons.forEach((button) => {
+    button.addEventListener("click", async (event) => {
+      const target = event.target;
+      const articleId = target.dataset.id;
+      location.assign(`/form.html?id=${articleId}`);
+    });
+  });
+  deleteButtons.forEach((button) => {
     button.addEventListener("click", async (event) => {
       try {
         const target = event.target;
@@ -44,6 +61,8 @@ const createArticles = (articles) => {
     });
   });
 };
+
+
 
 const fetchArticle = async () => {
   try {
