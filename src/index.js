@@ -83,8 +83,8 @@ const createArticles = () => {
 const displayMenuCategories = (categoriesArr) => {
   const liElements = categoriesArr.map((categoryElem) => {
     const li = document.createElement("li");
-    li.innerHTML = `${categoryElem[0]}(<strong>${categoryElem[1]}</strong>)`;
-    if (categoriesElem[0] === filter) {
+    li.innerHTML = `${categoryElem[0]} ( <strong>${categoryElem[1]}</strong> )`;
+    if (categoryElem[0] === filter) {
       li.classList.add("active");
     }
     li.addEventListener("click", () => {
