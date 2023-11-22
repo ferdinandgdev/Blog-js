@@ -1,11 +1,26 @@
 import "../assets/styles/styles.scss";
 import "./form.scss";
+import { openModal } from "../assets/javascripts/modal";
 
 const form = document.querySelector("form");
 const errorElement = document.querySelector("#errors");
 const btnCancel = document.querySelector(".btn-secondary");
-let articleId;
 let errors = [];
+let articleId;
+
+const initForm = async () => {
+  const params = new URL(window.location.href);
+  articleId = params.searchParams.get("id");
+  if (articleId) {
+    const response = await fetch(`https://restapi.fr/api/article/${articleId}`);
+    if (response.status < 300) {
+      const article = await response.json();
+      fillForm(article);
+    }
+  }
+};
+
+initForm();
 
 const fillForm = (article) => {
   const author = document.querySelector('input[name="author"]');
@@ -13,35 +28,20 @@ const fillForm = (article) => {
   const category = document.querySelector('input[name="category"]');
   const title = document.querySelector('input[name="title"]');
   const content = document.querySelector("textarea");
-
   author.value = article.author || "";
   img.value = article.img || "";
-  content.value = article.content || "";
-  title.value = article.title || "";
   category.value = article.category || "";
+  title.value = article.title || "";
+  content.value = article.content || "";
 };
 
-const initForm = async () => {
-  const params = new URL(location.href);
-  articleId = params.searchParams.get("id");
-  console.log(articleId);
-
-  if (articleId) {
-    const response = await fetch(
-      `https://restapi.fr/api/articles/${articleId}`
-    );
-    if (response.status < 300) {
-      const article = await response.json();
-      fillForm(article);
-      console.log(article);
-    }
+btnCancel.addEventListener("click", async () => {
+  const result = await openModal(
+    "Si vous quittez la page, vous allez perdre votre article"
+  );
+  if (result) {
+    window.location.assign("/index.html");
   }
-};
-
-initForm();
-
-btnCancel.addEventListener("click", () => {
-  location.assign("/index.html");
 });
 
 form.addEventListener("submit", async (event) => {
@@ -69,12 +69,11 @@ form.addEventListener("submit", async (event) => {
           },
         });
       }
-
       if (response.status < 299) {
-        location.assign("/index.html");
+        window.location.assign("/index.html");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      console.error("e : ", e);
     }
   }
 });
@@ -88,15 +87,14 @@ const formIsValid = (article) => {
     !article.img ||
     !article.title
   ) {
-    errors.push("Veuillez remplir tout les champs");
+    errors.push("Vous devez renseigner tous les champs");
   } else {
-    console.log("article ajouté!");
     errors = [];
   }
   if (errors.length) {
     let errorHTML = "";
     errors.forEach((e) => {
-      errorHTML += `<li> ${e} </li>`;
+      errorHTML += `<li>${e}</li>`;
     });
     errorElement.innerHTML = errorHTML;
     return false;
