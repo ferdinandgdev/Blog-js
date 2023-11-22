@@ -1,17 +1,20 @@
 import "./assets/styles/styles.scss";
 import "./index.scss";
+import { openModal } from "./assets/javascripts/modal.js";
 
 const articleContainerElement = document.querySelector(".articles-container");
 const categoriesContainerElement = document.querySelector(".categories");
 const selectElement = document.querySelector("select");
-let sortBy = "desc";
+
 let filter;
 let articles;
+let sortBy = "desc";
 
-selectElement.addEventListener("change", (event) => {
+selectElement.addEventListener("change", () => {
   sortBy = selectElement.value;
-  console.log(sortBy);
+  fetchArticle();
 });
+
 const createArticles = () => {
   const articlesDOM = articles
     .filter((article) => {
@@ -56,26 +59,28 @@ const createArticles = () => {
     button.addEventListener("click", (event) => {
       const target = event.target;
       const articleId = target.dataset.id;
-      window.location.assign(`./form.html?id=${articleId}`);
+      // Lien pour l'éditeur en ligne
+      window.location.assign(`src/form/form.html?id=${articleId}`);
     });
   });
   deleteButtons.forEach((button) => {
     button.addEventListener("click", async (event) => {
-      try {
-        const target = event.target;
-        const articleId = target.dataset.id;
-        const response = await fetch(
-          `https://restapi.fr/api/article/${articleId}`,
-          {
-            method: "DELETE",
-          }
-        );
-        const body = await response.json();
-        console.log(body);
-        fetchArticle();
-      } catch (e) {
-        console.log("e : ", e);
-      }
+      openModal("Etes vous sûr de vouloir supprimer votre article ?");
+      // try {
+      //   const target = event.target;
+      //   const articleId = target.dataset.id;
+      //   const response = await fetch(
+      //     `https://restapi.fr/api/article/${articleId}`,
+      //     {
+      //       method: "DELETE"
+      //     }
+      //   );
+      //   const body = await response.json();
+      //   console.log(body);
+      //   fetchArticle();
+      // } catch (e) {
+      //   console.log("e : ", e);
+      // }
     });
   });
 };
@@ -131,9 +136,6 @@ const fetchArticle = async () => {
       `https://restapi.fr/api/article?sort=createdAt:${sortBy}`
     );
     articles = await response.json();
-    if (!Array.isArray(articles)) {
-      articles = [articles];
-    }
     createArticles();
     createMenuCategories();
   } catch (e) {
