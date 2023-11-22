@@ -3,9 +3,15 @@ import "./index.scss";
 
 const articleContainerElement = document.querySelector(".articles-container");
 const categoriesContainerElement = document.querySelector(".categories");
+const selectElement = document.querySelector("select");
+let sortBy = "desc";
 let filter;
 let articles;
 
+selectElement.addEventListener("change", (event) => {
+  sortBy = selectElement.value;
+  console.log(sortBy);
+});
 const createArticles = () => {
   const articlesDOM = articles
     .filter((article) => {
@@ -77,7 +83,10 @@ const createArticles = () => {
 const displayMenuCategories = (categoriesArr) => {
   const liElements = categoriesArr.map((categoryElem) => {
     const li = document.createElement("li");
-    li.innerHTML = `${categoryElem[0]} ( <strong>${categoryElem[1]}</strong> )`;
+    li.innerHTML = `${categoryElem[0]}(<strong>${categoryElem[1]}</strong>)`;
+    if (categoriesElem[0] === filter) {
+      li.classList.add("active");
+    }
     li.addEventListener("click", () => {
       if (filter === categoryElem[0]) {
         filter = null;
@@ -118,7 +127,9 @@ const createMenuCategories = () => {
 
 const fetchArticle = async () => {
   try {
-    const response = await fetch("https://restapi.fr/api/articles");
+    const response = await fetch(
+      `https://restapi.fr/api/article?sort=createdAt:${sortBy}`
+    );
     articles = await response.json();
     if (!Array.isArray(articles)) {
       articles = [articles];

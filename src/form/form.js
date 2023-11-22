@@ -53,7 +53,7 @@ form.addEventListener("submit", async (event) => {
       const json = JSON.stringify(article);
       let response;
       if (articleId) {
-        response = await fetch(`https://restapi.fr/api/articles/${articleId}`, {
+        response = await fetch(`https://restapi.fr/api/article/${articleId}`, {
           method: "PATCH",
           body: json,
           headers: {
@@ -61,7 +61,7 @@ form.addEventListener("submit", async (event) => {
           },
         });
       } else {
-        response = await fetch("https://restapi.fr/api/articles", {
+        response = await fetch("https://restapi.fr/api/article", {
           method: "POST",
           body: json,
           headers: {
